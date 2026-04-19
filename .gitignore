@@ -1,0 +1,7 @@
+.idea/
+.allure
+*.iws
+*.iml
+*.ipr
+target/
+**/target/
