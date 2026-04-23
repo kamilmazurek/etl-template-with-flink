@@ -1,20 +1,16 @@
 package template.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @NoArgsConstructor
-public class Item {
+@AllArgsConstructor
+public class Part {
 
-    private String id;
+    private String partId;
 
     private String name;
-
-    private String description;
-
-    private List<Part> parts;
 
 }

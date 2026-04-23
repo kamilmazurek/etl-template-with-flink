@@ -32,7 +32,34 @@ public class ItemsETL {
                     )
                 """, dbUrl, dbUser, dbPassword));
 
-        var resultTable = tableEnv.sqlQuery("SELECT * FROM items");
+        tableEnv.executeSql(String.format("""
+                    CREATE TABLE parts (
+                        part_id STRING,
+                        item_id STRING,
+                        name STRING
+                    ) WITH (
+                        'connector' = 'jdbc',
+                        'url' = '%s',
+                        'table-name' = 'parts',
+                        'driver' = 'org.postgresql.Driver',
+                        'username' = '%s',
+                        'password' = '%s'
+                    )
+                """, dbUrl, dbUser, dbPassword));
+
+        var resultTable = tableEnv.sqlQuery("""
+                    SELECT
+                        i.id,
+                        i.name,
+                        i.description,
+                        COLLECT(
+                            CAST(ROW(p.part_id, p.name) AS ROW<part_id STRING, name STRING>)
+                        ) AS parts
+                    FROM items i
+                    LEFT JOIN parts p
+                        ON i.id = p.item_id
+                    GROUP BY i.id, i.name, i.description
+                """);
 
         tableEnv.toDataStream(resultTable)
                 .map(new ItemMapper())
