@@ -8,8 +8,7 @@ import template.model.Part;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import static java.util.stream.Collectors.toList;
+import java.util.stream.Collectors;
 
 public class ItemMapper implements MapFunction<Row, Item> {
 
@@ -20,16 +19,26 @@ public class ItemMapper implements MapFunction<Row, Item> {
         item.setId((String) row.getField("id"));
         item.setName((String) row.getField("name"));
         item.setDescription((String) row.getField("description"));
+        item.setParts(extractParts(row));
 
+        return item;
+    }
+
+    private List<Part> extractParts(Row row) {
         var partsMultiset = (Map<Row, Integer>) row.getField("parts");
 
-        var parts = partsMultiset.keySet().stream()
-                .filter(partRow -> partRow.getField("part_id") != null)
-                .map(partRow -> new Part((String) partRow.getField("part_id"), (String) partRow.getField("name")))
-                .collect(toList());
+        if (partsMultiset == null) {
+            return new ArrayList<>();
+        }
 
-        item.setParts(parts);
-        return item;
+        return partsMultiset.keySet().stream()
+                .filter(partRow -> partRow != null && partRow.getField("part_id") != null)
+                .map(this::toPart)
+                .collect(Collectors.toList());
+    }
+
+    private Part toPart(Row row) {
+        return new Part((String) row.getField("part_id"), (String) row.getField("name"));
     }
 
 }

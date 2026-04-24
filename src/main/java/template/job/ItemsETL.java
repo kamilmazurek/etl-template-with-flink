@@ -52,13 +52,14 @@ public class ItemsETL {
                         i.id,
                         i.name,
                         i.description,
-                        COLLECT(
-                            CAST(ROW(p.part_id, p.name) AS ROW<part_id STRING, name STRING>)
+                        (
+                            SELECT COLLECT(
+                                CAST(ROW(p.part_id, p.name) AS ROW<part_id STRING, name STRING>)
+                            )
+                            FROM parts p
+                            WHERE p.item_id = i.id
                         ) AS parts
                     FROM items i
-                    LEFT JOIN parts p
-                        ON i.id = p.item_id
-                    GROUP BY i.id, i.name, i.description
                 """);
 
         tableEnv.toDataStream(resultTable)
