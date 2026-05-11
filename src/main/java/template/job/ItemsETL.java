@@ -7,6 +7,8 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.bson.BsonDocument;
 import org.bson.Document;
+import template.connection.JdbcConnectionParameters;
+import template.connection.MongodbConnectionParameters;
 import template.mapper.ItemToDocumentMapper;
 import template.mapper.RowToItemMapper;
 
@@ -16,46 +18,37 @@ import static org.apache.flink.api.common.RuntimeExecutionMode.BATCH;
 public class ItemsETL {
 
     public static void main(String[] args) throws Exception {
-        var dbUrl = System.getenv("DB_URL");
-        var dbUser = System.getenv("DB_USER");
-        var dbPassword = System.getenv("DB_PASSWORD");
-
-        var mongoUri = System.getenv("MONGO_URI");
-        var mongoDatabase = System.getenv("MONGO_DATABASE");
-
         var env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setRuntimeMode(BATCH);
         var tableEnv = StreamTableEnvironment.create(env);
 
-        tableEnv.executeSql(String.format("""
+        try (var jdbcParams = new JdbcConnectionParameters()) {
+            var connectionWithClause = jdbcParams.toConnectionWithClause();
+
+            tableEnv.executeSql("""
                     CREATE TABLE items (
                         id STRING,
                         name STRING,
                         description STRING
                     ) WITH (
-                        'connector' = 'jdbc',
-                        'url' = '%s',
                         'table-name' = 'items',
-                        'driver' = 'org.postgresql.Driver',
-                        'username' = '%s',
-                        'password' = '%s'
+                        %s
                     )
-                """, dbUrl, dbUser, dbPassword));
+                    """.formatted(connectionWithClause)
+            );
 
-        tableEnv.executeSql(String.format("""
+            tableEnv.executeSql("""
                     CREATE TABLE parts (
                         part_id STRING,
                         item_id STRING,
                         name STRING
                     ) WITH (
-                        'connector' = 'jdbc',
-                        'url' = '%s',
                         'table-name' = 'parts',
-                        'driver' = 'org.postgresql.Driver',
-                        'username' = '%s',
-                        'password' = '%s'
+                        %s
                     )
-                """, dbUrl, dbUser, dbPassword));
+                    """.formatted(connectionWithClause)
+            );
+        }
 
         var resultTable = tableEnv.sqlQuery("""
                     SELECT
@@ -72,12 +65,7 @@ public class ItemsETL {
                     FROM items i
                 """);
 
-        var mongoSink = MongoSink.<Document>builder()
-                .setUri(mongoUri)
-                .setDatabase(mongoDatabase)
-                .setCollection("documents")
-                .setSerializationSchema((document, context) -> upsertById(document))
-                .build();
+        var mongoSink = createMongoSink();
 
         tableEnv.toDataStream(resultTable)
                 .map(new RowToItemMapper())
@@ -87,6 +75,17 @@ public class ItemsETL {
                 .name("ItemsETL output");
 
         env.execute("ItemsETL");
+    }
+
+    private static MongoSink<Document> createMongoSink() {
+        try (var mongodbParams = new MongodbConnectionParameters()) {
+            return MongoSink.<Document>builder()
+                    .setUri(mongodbParams.getUri())
+                    .setDatabase(mongodbParams.getDatabase())
+                    .setCollection("documents")
+                    .setSerializationSchema((document, context) -> upsertById(document))
+                    .build();
+        }
     }
 
     private static ReplaceOneModel<BsonDocument> upsertById(Document doc) {
