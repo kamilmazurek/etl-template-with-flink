@@ -3,6 +3,7 @@ package template.connection;
 import lombok.Getter;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 import static java.lang.System.getenv;
 
@@ -14,8 +15,7 @@ public class MongodbConnectionParameters implements AutoCloseable {
     private final String database;
 
     public MongodbConnectionParameters() {
-        var rawUri = getenv("MONGODB_URI");
-        this.uri = (rawUri != null) ? rawUri.toCharArray() : new char[0];
+        this.uri = Optional.ofNullable(getenv("MONGODB_URI")).map(String::toCharArray).orElse(null);
         this.database = getenv("MONGODB_DATABASE");
     }
 
@@ -25,6 +25,11 @@ public class MongodbConnectionParameters implements AutoCloseable {
 
     @Override
     public void close() {
+        if (this.uri == null) {
+            return;
+        }
+
         Arrays.fill(this.uri, '\0');
     }
+
 }

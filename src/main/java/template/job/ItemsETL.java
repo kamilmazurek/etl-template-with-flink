@@ -14,6 +14,7 @@ import template.mapper.RowToItemMapper;
 
 import static com.mongodb.client.model.Filters.eq;
 import static org.apache.flink.api.common.RuntimeExecutionMode.BATCH;
+import static template.connection.JdbcConnectorOptions.forTable;
 
 public class ItemsETL {
 
@@ -23,7 +24,6 @@ public class ItemsETL {
         var tableEnv = StreamTableEnvironment.create(env);
 
         try (var jdbcParams = new JdbcConnectionParameters()) {
-            var connectionWithClause = jdbcParams.toConnectionWithClause();
 
             tableEnv.executeSql("""
                     CREATE TABLE items (
@@ -31,10 +31,9 @@ public class ItemsETL {
                         name STRING,
                         description STRING
                     ) WITH (
-                        'table-name' = 'items',
                         %s
                     )
-                    """.formatted(connectionWithClause)
+                    """.formatted(forTable(jdbcParams, "items"))
             );
 
             tableEnv.executeSql("""
@@ -43,10 +42,9 @@ public class ItemsETL {
                         item_id STRING,
                         name STRING
                     ) WITH (
-                        'table-name' = 'parts',
                         %s
                     )
-                    """.formatted(connectionWithClause)
+                    """.formatted(forTable(jdbcParams, "parts"))
             );
         }
 
