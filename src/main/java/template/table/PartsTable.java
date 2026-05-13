@@ -1,4 +1,4 @@
-package template.tables;
+package template.table;
 
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 
