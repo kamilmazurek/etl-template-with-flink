@@ -16,7 +16,7 @@ public class JdbcConnectorOptions {
             'table-name' = '%s'
             """;
 
-    public static String forTable(JdbcConnectionParameters params, String tableName) {
+    public static String toWithClause(JdbcConnectionParameters params, String tableName) {
         return JDBC_CONNECTOR_OPTIONS.formatted(
                 escape(params.getUrl()),
                 escape(params.getUsername()),

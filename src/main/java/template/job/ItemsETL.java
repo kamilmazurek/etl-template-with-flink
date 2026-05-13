@@ -11,44 +11,23 @@ import template.connection.JdbcConnectionParameters;
 import template.connection.MongodbConnectionParameters;
 import template.mapper.ItemToDocumentMapper;
 import template.mapper.RowToItemMapper;
+import template.tables.ItemsTable;
+import template.tables.PartsTable;
 
 import static com.mongodb.client.model.Filters.eq;
 import static org.apache.flink.api.common.RuntimeExecutionMode.BATCH;
-import static template.connection.JdbcConnectorOptions.forTable;
+import static template.connection.JdbcConnectorOptions.toWithClause;
 
 public class ItemsETL {
 
     public static void main(String[] args) throws Exception {
-        var env = StreamExecutionEnvironment.getExecutionEnvironment();
-        env.setRuntimeMode(BATCH);
-        var tableEnv = StreamTableEnvironment.create(env);
+        var streamExecutionEnvironment = StreamExecutionEnvironment.getExecutionEnvironment().setRuntimeMode(BATCH);
+        var streamTableEnvironment = StreamTableEnvironment.create(streamExecutionEnvironment);
 
-        try (var jdbcParams = new JdbcConnectionParameters()) {
+        ItemsTable.create(streamTableEnvironment);
+        PartsTable.create(streamTableEnvironment);
 
-            tableEnv.executeSql("""
-                    CREATE TABLE items (
-                        id STRING,
-                        name STRING,
-                        description STRING
-                    ) WITH (
-                        %s
-                    )
-                    """.formatted(forTable(jdbcParams, "items"))
-            );
-
-            tableEnv.executeSql("""
-                    CREATE TABLE parts (
-                        part_id STRING,
-                        item_id STRING,
-                        name STRING
-                    ) WITH (
-                        %s
-                    )
-                    """.formatted(forTable(jdbcParams, "parts"))
-            );
-        }
-
-        var resultTable = tableEnv.sqlQuery("""
+        var resultTable = streamTableEnvironment.sqlQuery("""
                     SELECT
                         i.id,
                         i.name,
@@ -65,14 +44,14 @@ public class ItemsETL {
 
         var mongoSink = createMongoSink();
 
-        tableEnv.toDataStream(resultTable)
+        streamTableEnvironment.toDataStream(resultTable)
                 .map(new RowToItemMapper())
                 .map(new ItemToDocumentMapper())
                 .sinkTo(mongoSink)
                 .setParallelism(1)
                 .name("ItemsETL output");
 
-        env.execute("ItemsETL");
+        streamExecutionEnvironment.execute("ItemsETL");
     }
 
     private static MongoSink<Document> createMongoSink() {
