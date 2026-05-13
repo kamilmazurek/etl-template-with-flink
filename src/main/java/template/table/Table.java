@@ -1,4 +1,4 @@
-package template.tables;
+package template.table;
 
 import lombok.AllArgsConstructor;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
@@ -14,8 +14,8 @@ abstract class Table {
     private final String tableCreateQuery;
 
     void createTable(StreamTableEnvironment tableEnv) {
-        try (var jdbcParams = new JdbcConnectionParameters()) {
-            tableEnv.executeSql(withConnectorOptions(jdbcParams));
+        try (var connectionParameters = new JdbcConnectionParameters()) {
+            tableEnv.executeSql(withConnectorOptions(connectionParameters));
         }
     }
 
