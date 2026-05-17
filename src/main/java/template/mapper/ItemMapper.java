@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class RowToItemMapper implements MapFunction<Row, Item> {
+public class ItemMapper implements MapFunction<Row, Item> {
 
     @Override
     public Item map(Row row) {

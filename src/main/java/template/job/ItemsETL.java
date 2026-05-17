@@ -2,8 +2,7 @@ package template.job;
 
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
-import template.mapper.ItemToDocumentMapper;
-import template.mapper.RowToItemMapper;
+import template.mapper.ItemMapper;
 import template.table.ItemsTable;
 import template.table.PartsTable;
 
@@ -37,8 +36,7 @@ public class ItemsETL {
         var mongoSink = createMongoSink("items");
 
         streamTableEnvironment.toDataStream(resultTable)
-                .map(new RowToItemMapper())
-                .map(new ItemToDocumentMapper())
+                .map(new ItemMapper())
                 .sinkTo(mongoSink)
                 .setParallelism(1)
                 .name("ItemsETL output");
