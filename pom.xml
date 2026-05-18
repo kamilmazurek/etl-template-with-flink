@@ -28,7 +28,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-connector-mongodb</artifactId>
+            <artifactId>flink-sql-connector-mongodb</artifactId>
             <version>2.0.0-1.20</version>
         </dependency>
         <dependency>
@@ -65,6 +65,9 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                            </transformers>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                         </configuration>
                     </execution>
