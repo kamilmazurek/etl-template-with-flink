@@ -18,7 +18,7 @@ public final class ItemsTable extends Table {
         super("items", ITEMS_TABLE);
     }
 
-    public static void create(StreamTableEnvironment tableEnv) {
+    public static void init(StreamTableEnvironment tableEnv) {
         new ItemsTable().createTable(tableEnv);
     }
 
