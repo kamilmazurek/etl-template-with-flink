@@ -25,7 +25,7 @@ public class ItemsETL {
                     i.description,
                     (
                         SELECT COLLECT(
-                            CAST(ROW(p.part_id, p.name) AS ROW<part_id STRING, name STRING>)
+                            CAST(ROW(p.id, p.name) AS ROW<id STRING, name STRING>)
                         )
                         FROM parts p
                         WHERE p.item_id = i.id
