@@ -6,7 +6,7 @@ public class PartsTable extends Table {
 
     private static final String PARTS_TABLE = """
             CREATE TABLE parts (
-                part_id STRING,
+                id STRING,
                 item_id STRING,
                 name STRING
             ) WITH (

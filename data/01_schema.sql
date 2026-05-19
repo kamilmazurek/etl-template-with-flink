@@ -7,7 +7,7 @@ CREATE TABLE items
 
 CREATE TABLE parts
 (
-    part_id VARCHAR(50) PRIMARY KEY,
+    id VARCHAR(50) PRIMARY KEY,
     item_id VARCHAR(50) REFERENCES items (id),
     name    VARCHAR(100)
 );

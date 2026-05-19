@@ -1,4 +1,4 @@
-INSERT INTO parts (part_id, item_id, name)
+INSERT INTO parts (id, item_id, name)
 VALUES ('part-a1', 'item-a', 'Part A1'),
        ('part-a2', 'item-a', 'Part A2'),
        ('part-a3', 'item-a', 'Part A3'),

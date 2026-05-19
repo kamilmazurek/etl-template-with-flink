@@ -32,13 +32,13 @@ public class ItemMapper implements MapFunction<Row, Item> {
         }
 
         return partsMultiset.keySet().stream()
-                .filter(partRow -> partRow != null && partRow.getField("part_id") != null)
+                .filter(partRow -> partRow != null && partRow.getField("id") != null)
                 .map(this::toPart)
                 .collect(Collectors.toList());
     }
 
     private Part toPart(Row row) {
-        return new Part((String) row.getField("part_id"), (String) row.getField("name"));
+        return new Part((String) row.getField("id"), (String) row.getField("name"));
     }
 
 }
