@@ -15,8 +15,8 @@ public class ItemsETL {
         var streamExecutionEnvironment = StreamExecutionEnvironment.getExecutionEnvironment().setRuntimeMode(BATCH);
         var streamTableEnvironment = StreamTableEnvironment.create(streamExecutionEnvironment);
 
-        ItemsTable.create(streamTableEnvironment);
-        PartsTable.create(streamTableEnvironment);
+        ItemsTable.init(streamTableEnvironment);
+        PartsTable.init(streamTableEnvironment);
 
         var resultTable = streamTableEnvironment.sqlQuery("""
                 SELECT
@@ -33,12 +33,11 @@ public class ItemsETL {
                 FROM items i
                 """);
 
-        var mongoSink = createMongoSink("items");
+        var collectionName = "items";
 
         streamTableEnvironment.toDataStream(resultTable)
                 .map(new ItemMapper())
-                .sinkTo(mongoSink)
-                .setParallelism(1)
+                .sinkTo(createMongoSink(collectionName))
                 .name("ItemsETL output");
 
         streamExecutionEnvironment.execute("ItemsETL");

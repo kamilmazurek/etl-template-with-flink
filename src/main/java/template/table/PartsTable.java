@@ -18,7 +18,7 @@ public class PartsTable extends Table {
         super("parts", PARTS_TABLE);
     }
 
-    public static void create(StreamTableEnvironment tableEnv) {
+    public static void init(StreamTableEnvironment tableEnv) {
         new PartsTable().createTable(tableEnv);
     }
 

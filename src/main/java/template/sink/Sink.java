@@ -8,21 +8,19 @@ import org.apache.flink.mongodb.shaded.com.mongodb.client.model.ReplaceOptions;
 import org.apache.flink.mongodb.shaded.org.bson.BsonDocument;
 import org.apache.flink.mongodb.shaded.org.bson.Document;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import template.connection.MongodbConnectionParameters;
-import template.model.Item;
 
 import static org.apache.flink.mongodb.shaded.com.mongodb.client.model.Filters.eq;
 
 
 public class Sink {
 
-    private static final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public static MongoSink<Item> createMongoSink(String collectionName) {
+    public static <T> MongoSink<T> createMongoSink(String collectionName) {
         try (var connectionParameters = new MongodbConnectionParameters()) {
-            return MongoSink.<Item>builder()
+            return MongoSink.<T>builder()
                     .setUri(connectionParameters.getUri())
                     .setDatabase(connectionParameters.getDatabase())
                     .setCollection(collectionName)
@@ -32,8 +30,8 @@ public class Sink {
     }
 
     @SneakyThrows
-    private static Document toDocument(Item item) {
-        return Document.parse(objectMapper.writeValueAsString(item));
+    private static Document toDocument(Object object) {
+        return Document.parse(objectMapper.writeValueAsString(object));
     }
 
     private static ReplaceOneModel<BsonDocument> upsertById(Document doc) {
