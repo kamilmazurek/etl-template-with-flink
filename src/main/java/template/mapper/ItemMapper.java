@@ -5,12 +5,16 @@ import org.apache.flink.types.Row;
 import template.model.Item;
 import template.model.Part;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Optional;
+
+import static java.util.Collections.emptyMap;
+import static java.util.stream.Collectors.toList;
 
 public class ItemMapper implements MapFunction<Row, Item> {
+
+    private final PartMapper partMapper = new PartMapper();
 
     @Override
     public Item map(Row row) {
@@ -25,20 +29,12 @@ public class ItemMapper implements MapFunction<Row, Item> {
     }
 
     private List<Part> extractParts(Row row) {
-        var partsMultiset = (Map<Row, Integer>) row.getField("parts");
-
-        if (partsMultiset == null) {
-            return new ArrayList<>();
-        }
-
-        return partsMultiset.keySet().stream()
-                .filter(partRow -> partRow != null && partRow.getField("id") != null)
-                .map(this::toPart)
-                .collect(Collectors.toList());
-    }
-
-    private Part toPart(Row row) {
-        return new Part((String) row.getField("id"), (String) row.getField("name"));
+        return Optional.ofNullable((Map<Row, Integer>) row.getField("parts"))
+                .orElse(emptyMap())
+                .keySet()
+                .stream()
+                .map(partMapper::map)
+                .collect(toList());
     }
 
 }
