@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:8.0
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:17-alpine
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD}
+      POSTGRES_DB: testdb
+    volumes:
+      - ./data:/docker-entrypoint-initdb.d
+    restart: unless-stopped
+
+  flink-jobmanager:
+    image: etl-template-with-flink
+    container_name: flink-jobmanager
+    command: jobmanager
+    ports:
+      - "8081:8081"
+    environment:
+      JOB_MANAGER_RPC_ADDRESS: flink-jobmanager
+      POSTGRESQL_URL: jdbc:postgresql://postgres:5432/testdb
+      POSTGRESQL_USER: admin
+      POSTGRESQL_PASSWORD: ${POSTGRESQL_PASSWORD}
+      MONGODB_URI: mongodb://admin:${MONGO_PASSWORD}@mongo:27017
+      MONGODB_DATABASE: local
+    depends_on:
+      - mongo
+      - postgres
+    restart: unless-stopped
+
+  flink-taskmanager:
+    image: etl-template-with-flink
+    container_name: flink-taskmanager
+    command: taskmanager
+    environment:
+      JOB_MANAGER_RPC_ADDRESS: flink-jobmanager
+      POSTGRESQL_URL: jdbc:postgresql://postgres:5432/testdb
+      POSTGRESQL_USER: admin
+      POSTGRESQL_PASSWORD: ${POSTGRESQL_PASSWORD}
+      MONGODB_URI: mongodb://admin:${MONGO_PASSWORD}@mongo:27017
+      MONGODB_DATABASE: local
+    depends_on:
+      - flink-jobmanager
+    restart: unless-stopped
