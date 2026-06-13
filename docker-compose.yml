@@ -8,7 +8,7 @@ services:
       - "27017:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_INITDB_ROOT_PASSWORD: ${ETL_TEMPLATE_MONGO_PASSWORD}
     restart: unless-stopped
 
   postgres:
@@ -18,41 +18,47 @@ services:
       - "5432:5432"
     environment:
       POSTGRES_USER: admin
-      POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD}
+      POSTGRES_PASSWORD: ${ETL_TEMPLATE_POSTGRESQL_PASSWORD}
       POSTGRES_DB: testdb
     volumes:
-      - ./data:/docker-entrypoint-initdb.d
+      - ./src/test/resources/sql:/docker-entrypoint-initdb.d:ro
     restart: unless-stopped
 
-  flink-jobmanager:
+  etl-template-with-flink-jobmanager:
     image: etl-template-with-flink
-    container_name: flink-jobmanager
+    container_name: etl-template-with-flink-jobmanager
+    build:
+      context: .
+      dockerfile: Dockerfile
     command: jobmanager
     ports:
       - "8081:8081"
     environment:
-      JOB_MANAGER_RPC_ADDRESS: flink-jobmanager
+      JOB_MANAGER_RPC_ADDRESS: etl-template-with-flink-jobmanager
       POSTGRESQL_URL: jdbc:postgresql://postgres:5432/testdb
       POSTGRESQL_USER: admin
-      POSTGRESQL_PASSWORD: ${POSTGRESQL_PASSWORD}
-      MONGODB_URI: mongodb://admin:${MONGO_PASSWORD}@mongo:27017
+      POSTGRESQL_PASSWORD: ${ETL_TEMPLATE_POSTGRESQL_PASSWORD}
+      MONGODB_URI: mongodb://admin:${ETL_TEMPLATE_MONGO_PASSWORD}@mongo:27017
       MONGODB_DATABASE: local
     depends_on:
       - mongo
       - postgres
     restart: unless-stopped
 
-  flink-taskmanager:
+  etl-template-with-flink-taskmanager:
     image: etl-template-with-flink
-    container_name: flink-taskmanager
+    container_name: etl-template-with-flink-taskmanager
+    build:
+      context: .
+      dockerfile: Dockerfile
     command: taskmanager
     environment:
-      JOB_MANAGER_RPC_ADDRESS: flink-jobmanager
+      JOB_MANAGER_RPC_ADDRESS: etl-template-with-flink-jobmanager
       POSTGRESQL_URL: jdbc:postgresql://postgres:5432/testdb
       POSTGRESQL_USER: admin
-      POSTGRESQL_PASSWORD: ${POSTGRESQL_PASSWORD}
+      POSTGRESQL_PASSWORD: ${ETL_TEMPLATE_POSTGRESQL_PASSWORD}
       MONGODB_URI: mongodb://admin:${MONGO_PASSWORD}@mongo:27017
       MONGODB_DATABASE: local
     depends_on:
-      - flink-jobmanager
+      - etl-template-with-flink-jobmanager
     restart: unless-stopped

@@ -9,7 +9,7 @@ import template.table.PartsTable;
 import static org.apache.flink.api.common.RuntimeExecutionMode.BATCH;
 import static template.sink.Sink.createMongoSink;
 
-public class ItemsETL {
+public class ItemsEtlJob {
 
     public static void main(String[] args) throws Exception {
         var streamExecutionEnvironment = StreamExecutionEnvironment.getExecutionEnvironment().setRuntimeMode(BATCH);
