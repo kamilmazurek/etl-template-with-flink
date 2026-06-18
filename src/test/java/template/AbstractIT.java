@@ -1,4 +1,4 @@
-package tempate;
+package template;
 
 import org.apache.flink.mongodb.shaded.com.mongodb.client.MongoClients;
 import org.apache.flink.runtime.testutils.MiniClusterResourceConfiguration;
@@ -42,15 +42,15 @@ public abstract class AbstractIT {
     protected static final MongoDBContainer MONGO = new MongoDBContainer("mongo:8.0");
 
     @SystemStub
-    protected static EnvironmentVariables environmentVariables;
+    protected static EnvironmentVariables env;
 
     @BeforeAll
     static void setup() {
-        environmentVariables.set("POSTGRESQL_URL", POSTGRES.getJdbcUrl());
-        environmentVariables.set("POSTGRESQL_USER", POSTGRES.getUsername());
-        environmentVariables.set("POSTGRESQL_PASSWORD", POSTGRES.getPassword());
-        environmentVariables.set("MONGODB_URI", MONGO.getReplicaSetUrl());
-        environmentVariables.set("MONGODB_DATABASE", "test_mongo_db");
+        env.set("POSTGRESQL_URL", POSTGRES.getJdbcUrl());
+        env.set("POSTGRESQL_USER", POSTGRES.getUsername());
+        env.set("POSTGRESQL_PASSWORD", POSTGRES.getPassword());
+        env.set("MONGODB_URI", MONGO.getReplicaSetUrl());
+        env.set("MONGODB_DATABASE", "test_mongo_db");
     }
 
     @BeforeEach

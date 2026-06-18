@@ -1,4 +1,4 @@
-package tempate;
+package template;
 
 import template.model.Item;
 import template.model.Part;

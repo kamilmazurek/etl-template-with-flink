@@ -1,4 +1,4 @@
-package tempate;
+package template;
 
 import lombok.SneakyThrows;
 import org.apache.flink.mongodb.shaded.com.mongodb.client.MongoClients;

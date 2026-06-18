@@ -1,7 +1,6 @@
-package tempate.job;
+package template;
 
 import org.junit.jupiter.api.Test;
-import tempate.AbstractIT;
 import template.job.ItemsEtlJob;
 import template.model.Item;
 
@@ -11,8 +10,8 @@ import java.sql.SQLException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static tempate.TestData.*;
-import static tempate.TestUtils.getMongoCollection;
+import static template.TestData.*;
+import static template.TestUtils.getMongoCollection;
 
 public class ItemsEtlJobIT extends AbstractIT {
 
