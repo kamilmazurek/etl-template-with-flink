@@ -13,7 +13,6 @@ import template.connection.MongodbConnectionParameters;
 
 import static org.apache.flink.mongodb.shaded.com.mongodb.client.model.Filters.eq;
 
-
 public class Sink {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
