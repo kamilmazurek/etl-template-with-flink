@@ -9,7 +9,11 @@ import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
+import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
+import uk.org.webcompere.systemstubs.jupiter.SystemStub;
+import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
 
 import static org.apache.flink.api.common.RuntimeExecutionMode.BATCH;
 import static org.mockito.ArgumentMatchers.any;
@@ -19,7 +23,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(SystemStubsExtension.class)
 public abstract class AbstractFlinkJobTest {
+
+    @SystemStub
+    protected EnvironmentVariables env;
 
     protected DataStream<?> dataStream;
 
@@ -27,7 +35,7 @@ public abstract class AbstractFlinkJobTest {
 
     protected DataStreamSink<?> dataStreamSink;
 
-    protected StreamExecutionEnvironment env;
+    protected StreamExecutionEnvironment executionEnv;
 
     protected StreamTableEnvironment tableEnv;
 
@@ -41,10 +49,12 @@ public abstract class AbstractFlinkJobTest {
     void setUpFlinkEnvironment() {
         initMocks();
         configureMocks();
+        env.set("MONGODB_URI", "mongodb://localhost:27017");
+        env.set("MONGODB_DATABASE", "testdb");
     }
 
     private void initMocks() {
-        env = mock(StreamExecutionEnvironment.class);
+        executionEnv = mock(StreamExecutionEnvironment.class);
         tableEnv = mock(StreamTableEnvironment.class);
         table = mock(Table.class);
         dataStream = mock(DataStream.class);
@@ -55,12 +65,12 @@ public abstract class AbstractFlinkJobTest {
     }
 
     private void configureMocks() {
-        when(env.setRuntimeMode(BATCH)).thenReturn(env);
+        when(executionEnv.setRuntimeMode(BATCH)).thenReturn(executionEnv);
         when(tableEnv.sqlQuery(anyString())).thenReturn(table);
         doReturn(dataStream).when(tableEnv).toDataStream(table);
         doReturn(dataStreamSink).when(singleOutputStreamOperator).sinkTo(any(Sink.class));
-        envStatic.when(StreamExecutionEnvironment::getExecutionEnvironment).thenReturn(env);
-        tableEnvStatic.when(() -> StreamTableEnvironment.create(env)).thenReturn(tableEnv);
+        envStatic.when(StreamExecutionEnvironment::getExecutionEnvironment).thenReturn(executionEnv);
+        tableEnvStatic.when(() -> StreamTableEnvironment.create(executionEnv)).thenReturn(tableEnv);
     }
 
     @AfterEach
