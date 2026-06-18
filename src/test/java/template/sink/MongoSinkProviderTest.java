@@ -1,6 +1,5 @@
 package template.sink;
 
-import org.apache.flink.connector.mongodb.sink.MongoSink;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
@@ -10,7 +9,7 @@ import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(SystemStubsExtension.class)
-class SinkTest {
+class MongoSinkProviderTest {
 
     @SystemStub
     private EnvironmentVariables env;
@@ -21,13 +20,13 @@ class SinkTest {
         env.set("MONGODB_URI", "mongodb://localhost:27017");
         env.set("MONGODB_DATABASE", "testdb");
 
-        //and collection name
-        var collectionName = "test-collection";
+        //and provider
+        var sinkProvider = new MongoSinkProvider<>();
 
         //when sink is created
-        MongoSink<Object> sink = Sink.createMongoSink(collectionName);
+        var sink = sinkProvider.create("test-collection");
 
-        //then the sink object should be returned
+        //then sink is returned
         assertNotNull(sink);
     }
 }

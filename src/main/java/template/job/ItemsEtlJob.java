@@ -2,12 +2,14 @@ package template.job;
 
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
+import template.connection.MongodbConnectionParameters;
 import template.mapper.ItemMapper;
+import template.model.Item;
+import template.sink.MongoSinkProvider;
 import template.table.ItemsTable;
 import template.table.PartsTable;
 
 import static org.apache.flink.api.common.RuntimeExecutionMode.BATCH;
-import static template.sink.Sink.createMongoSink;
 
 public class ItemsEtlJob {
 
@@ -33,11 +35,11 @@ public class ItemsEtlJob {
                 FROM items i
                 """);
 
-        var collectionName = "items";
+        var sinkProvider = new MongoSinkProvider<Item>();
 
         streamTableEnvironment.toDataStream(resultTable)
                 .map(new ItemMapper())
-                .sinkTo(createMongoSink(collectionName))
+                .sinkTo(sinkProvider.create("items"))
                 .name("ItemsETL output");
 
         streamExecutionEnvironment.execute("ItemsETL");
