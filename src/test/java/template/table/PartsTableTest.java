@@ -34,7 +34,7 @@ class PartsTableTest {
         when(tableEnv.executeSql(anyString())).thenReturn(tableResultMock);
 
         //when parts table is initialized
-        PartsTable.init(tableEnv);
+        new PartsTable().init(tableEnv);
 
         //then code has been executed
         var captor = ArgumentCaptor.forClass(String.class);

@@ -5,7 +5,7 @@ import org.apache.flink.types.Row;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
+import org.mockito.MockedConstruction;
 import template.mapper.ItemMapper;
 import template.table.ItemsTable;
 import template.table.PartsTable;
@@ -13,19 +13,19 @@ import template.table.PartsTable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.verify;
 
 class ItemsEtlJobTest extends AbstractFlinkJobTest {
 
-    private MockedStatic<ItemsTable> itemsTableStatic;
+    private MockedConstruction<ItemsTable> itemsMockConstruction;
 
-    private MockedStatic<PartsTable> partsTableStatic;
+    private MockedConstruction<PartsTable> partsMockConstruction;
 
     @BeforeEach
-    void setUpDomain() {
-        itemsTableStatic = mockStatic(ItemsTable.class);
-        partsTableStatic = mockStatic(PartsTable.class);
+    void init() {
+        itemsMockConstruction = mockConstruction(ItemsTable.class);
+        partsMockConstruction = mockConstruction(PartsTable.class);
     }
 
     @Test
@@ -38,8 +38,10 @@ class ItemsEtlJobTest extends AbstractFlinkJobTest {
         ItemsEtlJob.main(new String[]{});
 
         //then tables should be initialized
-        itemsTableStatic.verify(() -> ItemsTable.init(tableEnv));
-        partsTableStatic.verify(() -> PartsTable.init(tableEnv));
+        var itemsTable = itemsMockConstruction.constructed().get(0);
+        var partsTable = partsMockConstruction.constructed().get(0);
+        verify(itemsTable).init(tableEnv);
+        verify(partsTable).init(tableEnv);
 
         //and sql query should be executed
         verify(tableEnv).sqlQuery(anyString());
@@ -52,8 +54,8 @@ class ItemsEtlJobTest extends AbstractFlinkJobTest {
     }
 
     @AfterEach
-    void tearDownDomain() {
-        itemsTableStatic.close();
-        partsTableStatic.close();
+    void cleanup() {
+        itemsMockConstruction.close();
+        partsMockConstruction.close();
     }
 }

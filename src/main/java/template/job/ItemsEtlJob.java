@@ -2,7 +2,6 @@ package template.job;
 
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
-import template.connection.MongodbConnectionParameters;
 import template.mapper.ItemMapper;
 import template.model.Item;
 import template.sink.MongoSinkProvider;
@@ -17,8 +16,8 @@ public class ItemsEtlJob {
         var streamExecutionEnvironment = StreamExecutionEnvironment.getExecutionEnvironment().setRuntimeMode(BATCH);
         var streamTableEnvironment = StreamTableEnvironment.create(streamExecutionEnvironment);
 
-        ItemsTable.init(streamTableEnvironment);
-        PartsTable.init(streamTableEnvironment);
+        new ItemsTable().init(streamTableEnvironment);
+        new PartsTable().init(streamTableEnvironment);
 
         var resultTable = streamTableEnvironment.sqlQuery("""
                 SELECT
