@@ -1,8 +1,6 @@
 package template.table;
 
-import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
-
-public class PartsTable extends Table {
+public final class PartsTable extends Table {
 
     private static final String PARTS_TABLE = """
             CREATE TABLE parts (
@@ -14,12 +12,8 @@ public class PartsTable extends Table {
             )
             """;
 
-    private PartsTable() {
+    public PartsTable() {
         super("parts", PARTS_TABLE);
-    }
-
-    public static void init(StreamTableEnvironment tableEnv) {
-        new PartsTable().createTable(tableEnv);
     }
 
 }

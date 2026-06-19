@@ -25,18 +25,8 @@ public class ItemsEtlJobIT extends AbstractIT {
 
         //then transformed data has been put to MongoDB
         var items = getMongoCollection(MONGO.getReplicaSetUrl(), "test_mongo_db", "items", Item.class);
-
-        var expectedItems = List.of(
-                createTestItemA(),
-                createTestItemB(),
-                createTestItemC(),
-                createTestItemD()
-        );
-
-        assertThat(items)
-                .usingRecursiveComparison()
-                .ignoringCollectionOrder()
-                .isEqualTo(expectedItems);
+        var expectedItems = List.of(createTestItemA(), createTestItemB(), createTestItemC(), createTestItemD());
+        assertThat(items).usingRecursiveComparison().ignoringCollectionOrder().isEqualTo(expectedItems);
     }
 
     private void createTestData() throws SQLException, IOException, URISyntaxException {

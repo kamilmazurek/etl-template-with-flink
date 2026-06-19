@@ -35,7 +35,7 @@ class UpsertMongoSerializationSchemaTest {
         assertTrue(replaceModel.getReplaceOptions().isUpsert());
 
         //and fields are mapped
-        BsonDocument replacementDocument = replaceModel.getReplacement();
+        var replacementDocument = replaceModel.getReplacement();
         assertEquals(new BsonString("item-a"), replacementDocument.get("_id"));
         assertEquals(new BsonString("Item A"), replacementDocument.get("name"));
         assertEquals(new BsonString("Test item A"), replacementDocument.get("description"));

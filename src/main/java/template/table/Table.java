@@ -13,7 +13,7 @@ abstract class Table {
 
     private final String tableCreateQuery;
 
-    void createTable(StreamTableEnvironment tableEnv) {
+    public void init(StreamTableEnvironment tableEnv) {
         try (var connectionParameters = new JdbcConnectionParameters()) {
             tableEnv.executeSql(withConnectorOptions(connectionParameters));
         }
