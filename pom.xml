@@ -24,6 +24,8 @@
         <testcontainers.version>1.21.4</testcontainers.version>
         <system-stubs.version>2.1.8</system-stubs.version>
         <byte-buddy.version>1.14.12</byte-buddy.version>
+        <allure.version>2.35.1</allure.version>
+        <allure.maven.plugin.version>2.18.0</allure.maven.plugin.version>
         <!-- build -->
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
         <maven-shade-plugin.version>3.5.2</maven-shade-plugin.version>
@@ -120,6 +122,12 @@
             <version>${byte-buddy.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-jupiter</artifactId>
+            <version>${allure.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -175,6 +183,14 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>io.qameta.allure</groupId>
+                <artifactId>allure-maven</artifactId>
+                <version>${allure.maven.plugin.version}</version>
+                <configuration>
+                    <reportVersion>${allure.version}</reportVersion>
+                </configuration>
             </plugin>
         </plugins>
     </build>
