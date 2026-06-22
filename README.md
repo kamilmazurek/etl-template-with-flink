@@ -40,6 +40,40 @@ Following steps provide a quick way to get started with the template:
     ```
 7. Modify the source code to fit your needs, rebuild the project, and run the application 🚀.
 
+## Table of Contents
+
+* [Why This Template?](#why-this-template)
+* [Architecture Overview](#architecture-overview)
+* [Apache Flink as Batch Engine](#apache-flink-as-batch-engine)
+* [When to Use ETL Architecture](#when-to-use-etl-architecture)
+* [Technology Stack](#technology-stack)
+* [How It Works](#how-it-works)
+* [Build and Deployment](#build-and-deployment)
+* [End to End Flow](#end-to-end-flow)
+* [Flink Dashboard and REST API](#flink-dashboard-and-rest-api)
+* [Tests](#tests)
+* [Additional Resources](#additional-resources)
+* [Author](#author)
+* [Disclaimer](#disclaimer)
+
+## Why This Template?
+
+My main motivation for creating this project was to have a reusable implementation of an ETL pipeline based on Apache Flink.
+Starting a new project often involves repeatedly setting up the same project structure, configuration, database connectors, and tooling.
+This template reduces that overhead by providing a solid foundation for building data processing jobs.
+
+To accelerate development while maintaining quality standards, the template is preconfigured with:
+* **Apache Flink**
+* **PostgreSQL** as the source database
+* **MongoDB** as the target database
+* **Preconfigured ETL job**
+* **Docker support**
+* **Unit tests**
+* **Integration tests**
+* **Allure reports**
+
+It reduces repetitive setup by providing a ready-to-use project structure, allowing developers to focus on data transformation and business requirements.
+
 ## Disclaimer
 
 THIS SOFTWARE AND ANY DOCUMENTATION INCLUDED IN THIS REPOSITORY AND CREATED BY THE AUTHOR
