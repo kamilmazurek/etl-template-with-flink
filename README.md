@@ -1,6 +1,44 @@
 # ETL Architecture Template with Apache Flink
 
-ETL Architecture Template with Java and Apache Flink
+This repository contains an implementation of a Java-based ETL (Extract, Transform, Load) pipeline designed to migrate and transform data between databases.
+Out of the box, it provides a fully working PostgreSQL to MongoDB pipeline that can be adapted to other sources or targets using Flink connectors.
+It serves as a ready-to-use template for modern data engineering workloads.
+
+The data pipeline is built using a unified combination of the Flink Table/SQL API and DataStream API,
+offering a modular, decoupled structure designed to quickly bootstrap scalable, fault-tolerant ETL applications.
+
+Key advantages:
+* **Developer Productivity**: Ready-to-use structure eliminates boilerplate job, environment, schema, and connector configurations.
+* **Separation of Concerns**: Joins are handled in Flink SQL, domain mappings occur in isolated mappers, and data delivery is handled by dedicated sinks.
+* **Performance & Efficiency**: Execution engine optimizes memory usage and pipelined transformations out of the box.
+* **Flexibility**: Changing input sources or output destinations requires fewer changes to your core data processing logic.
+* **Ease of Testing**: Modular design enables straightforward operator unit testing and end-to-end integration testing.
+
+The goal is to keep it simple, clean and easy to modify.
+
+## Quickstart
+
+Following steps provide a quick way to get started with the template:
+
+1. Ensure a JDK is available to build and run the code. Temurin, based on OpenJDK and available from [adoptium.net](https://adoptium.net/), can be used for this purpose.
+2. Download the source code either by cloning the repository with Git or by downloading the ZIP file. If you downloaded the ZIP, extract it. Then navigate to the etl-template-with-flink folder.
+3. Build the project and compile the code into a JAR file:
+    ```shell
+    mvnw clean install
+    ```
+4. Build Docker Image and start the required infrastructure (Flink cluster, PostgreSQL, and MongoDB) using Docker Compose:
+    ```shell
+    docker compose up --build
+    ```
+5. Run ETL job by sending a POST request to Flink’s native REST API endpoint, e.g.:
+    ```shell
+    curl -X POST http://localhost:8081/jars/00000000-0000-0000-0000-000000000000_etl-template-with-flink.jar/run?entry-class=template.job.ItemsEtlJob
+    ```
+6. Verify the processing results by checking your local MongoDB instance. Transformed data should be loaded into the `items` collection. MongoDB connection string:
+    ```console
+    mongodb://admin:etl-template-mongo-password@localhost:27017/
+    ```
+7. Modify the source code to fit your needs, rebuild the project, and run the application 🚀.
 
 ## Disclaimer
 
