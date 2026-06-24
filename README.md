@@ -30,7 +30,7 @@ Following steps provide a quick way to get started with the template:
     ```shell
     docker compose up --build
     ```
-5. Run ETL job by sending a POST request to Flink’s native REST API endpoint, e.g.:
+5. Run ETL job by sending a POST request to Flink's native REST API endpoint, e.g.:
     ```shell
     curl -X POST http://localhost:8081/jars/00000000-0000-0000-0000-000000000000_etl-template-with-flink.jar/run?entry-class=template.job.ItemsEtlJob
     ```
@@ -73,6 +73,54 @@ To accelerate development while maintaining quality standards, the template is p
 * **Allure reports**
 
 It reduces repetitive setup by providing a ready-to-use project structure, allowing developers to focus on data transformation and business requirements.
+
+## Architecture Overview
+
+The core architectural pattern of an ETL (Extract, Transform, Load) pipeline focuses on decoupling data-related operations:
+* **Extract**: Reading the data from the source database
+* **Transform**: Changing and cleaning the data structure
+* **Load**: Saving the data into the target database
+
+This template structures these distinct phases into clear building blocks using a combination of Flink's Table/SQL API and DataStream API, so that a change in your data source or target storage does not cascade through your core processing logic.
+
+The architecture typically consists of Source Tables, Relational SQL Queries, Domain Mappers, and Target Sinks. It cleanly separates declarative relational operations (such as joins and array aggregations) from programmatic object manipulations (such as mappings and domain object nesting).
+
+The image below shows the concept implemented in this project:
+
+### TODO: add image
+
+Apache Flink is well-suited for this architecture due to its unified execution model.
+In this template, the pipeline reads from a relational environment, uses Flink's SQL execution planner to handle entity relationships, and then transitions to the DataStream layer to map Java domain representations before pushing documents downstream.
+
+As a result, this project contains a template implementation of a batch ETL pipeline, written in Java with Apache Flink.
+The implementation is designed to be modular, flexible, and easy to extend. It consists of:
+* **Extraction (Source)**
+    * Extracting data from PostgreSQL tables using the Flink Table API
+* **Transformation (Core Logic)**
+    * Transforming data using Flink SQL
+    * Mapping data using a dedicated domain mapper
+* **Loading (Sink)**
+    * Saving data to MongoDB using the MongoDB Sink
+
+By default, this template extracts data from PostgreSQL and loads documents to MongoDB. However, because each part is isolated, swapping a relational database for a message broker or changing the target document store can be done without rewriting your core mapping logic.
+
+## Apache Flink as Batch Engine
+
+Apache Flink serves as the core execution engine for this template.
+Even though Flink is mostly known for real-time stream processing, it features a unified architecture that handles both batch and streaming workloads.
+Flink provides a way to use [BATCH execution mode](https://nightlies.apache.org/flink/flink-docs-stable/docs/dev/datastream/execution_mode/) out of the box.
+This template uses Flink to process finite datasets efficiently, making it a great fit for scheduled ETL jobs, periodic data loads, and one-off data migrations.
+
+Using Flink for batch ETL scales well for larger workloads.
+During heavy relational operations like the nested SQL join in this template, Flink's execution engine actively utilizes [managed memory](https://nightlies.apache.org/flink/flink-docs-stable/docs/deployment/memory/mem_setup_tm/#managed-memory).
+If processing datasets exceeds managed memory, Flink can gracefully [spill data to disk](https://nightlies.apache.org/flink/flink-docs-stable/docs/deployment/memory/mem_tuning/#configure-memory-for-batch-jobs). This helps reduce the risk of the out-of-memory errors that may affect simpler data processing scripts.
+
+Furthermore, Flink's unified [Table and SQL API](https://nightlies.apache.org/flink/flink-docs-stable/docs/dev/table/overview/) allows us to use declarative SQL to resolve relational nesting logic, and then bridge to the [DataStream API](https://nightlies.apache.org/flink/flink-docs-stable/docs/dev/datastream/overview/) for custom domain mapping and delivery to MongoDB.
+This approach keeps the batch pipeline modular and easy to maintain.
+
+While this template comes preconfigured with a MongoDB sink, Flink supports a broad ecosystem of [built-in connectors](https://nightlies.apache.org/flink/flink-docs-stable/docs/connectors/datastream/overview/).
+Because the extraction and transformation steps are isolated, you can change the target destination without rewriting your logic.
+You can configure the pipeline to insert the data into a traditional SQL database, stream the events directly into a Kafka topic, or write the data to standard file formats like CSV or Parquet.
 
 ## Disclaimer
 
