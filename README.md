@@ -8,11 +8,11 @@ The data pipeline is built using a unified combination of the Flink Table/SQL AP
 offering a modular, decoupled structure designed to quickly bootstrap scalable, fault-tolerant ETL applications.
 
 Key advantages:
-* **Developer Productivity**: Ready-to-use structure eliminates boilerplate job, environment, schema, and connector configurations.
-* **Separation of Concerns**: Joins are handled in Flink SQL, domain mappings occur in isolated mappers, and data delivery is handled by dedicated sinks.
-* **Performance & Efficiency**: Execution engine optimizes memory usage and pipelined transformations out of the box.
-* **Flexibility**: Changing input sources or output destinations requires fewer changes to your core data processing logic.
-* **Ease of Testing**: Modular design enables straightforward operator unit testing and end-to-end integration testing.
+* **Developer Productivity**: Provides configuration for environments, schemas, transformations, and connectors.
+* **Separation of Concerns**: Flink SQL handles joins, mappers process domain logic, and sinks manage delivery.
+* **Performance & Efficiency**: Execution engine optimizes memory usage and pipelined transformations.
+* **Flexibility**: Changing data sources or destinations requires minimal updates to core processing logic.
+* **Ease of Testing**: Modular approach simplifies both unit and end-to-end integration testing.
 
 The goal is to keep it simple, clean and easy to modify.
 
@@ -121,6 +121,60 @@ This approach keeps the batch pipeline modular and easy to maintain.
 While this template comes preconfigured with a MongoDB sink, Flink supports a broad ecosystem of [built-in connectors](https://nightlies.apache.org/flink/flink-docs-stable/docs/connectors/datastream/overview/).
 Because the extraction and transformation steps are isolated, you can change the target destination without rewriting your logic.
 You can configure the pipeline to insert the data into a traditional SQL database, stream the events directly into a Kafka topic, or write the data to standard file formats like CSV or Parquet.
+
+## When to Use ETL Architecture
+
+ETL (Extract, Transform, Load) architecture helps separate data operations from core application logic and storage details.
+This improves modularity and makes it easier to adapt pipelines as data sources and targets evolve.
+
+This architecture is especially useful when you need to handle complex data transformations.
+It makes adjusting to new data formats simpler, especially if you need to:
+* **Decouple logic from storage**: Keep transformation logic completely independent of specific database technologies.
+* **Simplify data mapping**: Transform complex data to fit a clean, well-defined target schema.
+* **Combine multiple data sources**: Merge data from different systems into a unified model.
+* **Isolate system changes**: Swap data sources or destinations without rewriting core processing logic.
+
+Thanks to its clear domain mapping, this template pairs naturally with structured application patterns.
+For example, it can be used to prepare and load data for services built on [Hexagonal Architecture](https://kamilmazurek.pl/hexagonal-architecture-template) or [Layered Architecture](https://kamilmazurek.pl/layered-architecture-template).
+Furthermore, because Flink natively bridges batch and stream processing, you can configure the sink to emit domain events, making it a data ingestion engine for an [Event-Driven Architecture](https://kamilmazurek.pl/event-driven-architecture-template).
+
+However, for simple data copying or mirroring identical tables between databases, an ETL pipeline introduces unnecessary overhead. In those cases, a direct replication tool or database link is usually easier to implement and maintain.
+
+Ultimately, choosing an ETL architecture depends on your data's structural complexity. It is a good fit for applications that need to cleanly transform and move data across different database ecosystems over time, providing a pipeline that is resilient, testable, and easy to evolve.
+
+## Technology Stack
+
+The application is implemented in Java with Apache Flink, and integrates with a relational database (PostgreSQL) and a document store (MongoDB).
+
+This setup is well-suited for handling structured business data and transforming it into document layouts.
+It remains easy to switch to other storage systems if needed, since the project uses decoupled components.
+
+The data processing pipeline combines Flink's Table API and SQL with the DataStream API to handle relational nesting and custom mapping seamlessly.
+Additionally, Flink's unified execution model simplifies the process of running this pipeline as a regular batch job.
+The project infrastructure is orchestrated using Docker Compose, allowing you to spin up the required databases instantly for local development and testing.
+
+In summary, the stack looks as follows:
+- **Language and Framework**
+    - **Java 17** - Main programming language used to implement the pipeline and domain logic
+    - **Apache Flink** - Core stream and batch processing framework used as the execution engine
+
+- **Databases**
+    - **PostgreSQL** - Relational source database containing the raw entity tables
+    - **MongoDB** - Document target database storing the nested, aggregated outputs
+    - **Flink Connectors** - Built-in JDBC and MongoDB integrations used to bridge Flink with the databases
+
+- **Testing**
+    - **JUnit** - Framework for writing unit and integration tests for transformation logic
+    - **Mockito** - Mocking framework used to isolate components during unit testing
+      Testcontainers - Library used to instantiate real PostgreSQL and MongoDB instances dynamically during integration tests
+    - **Allure Report** - Tool for generating clear and detailed test execution reports
+
+- **Build & Infrastructure**
+    - **Apache Maven** - Build automation tool used for managing dependencies and packaging the job
+    - **Docker and Docker Compose** - Platforms for orchestrating local containers to run database instances consistently
+
+This technology stack provides a solid foundation for building and maintaining scalable, high-performance ETL pipelines with decoupled data operations.
+Each component was chosen to balance simplicity, structural boundary isolation, and robust processing functionality.
 
 ## Disclaimer
 
