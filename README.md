@@ -289,11 +289,9 @@ public class MongoSinkProvider<T> {
 
 To construct the actual data flow, these processing stages are assembled into the pipeline that converts the SQL result into a data stream, applies the mapper, and attaches the MongoDB sink:
 ```java
-var sinkProvider = new MongoSinkProvider<Item>();
-
 streamTableEnvironment.toDataStream(resultTable)
     .map(new ItemMapper())
-    .sinkTo(sinkProvider.create("items"))
+    .sinkTo(new MongoSinkProvider<Item>().create("items"))
     .name("ItemsETL output");
 ```
 
