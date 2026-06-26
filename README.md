@@ -176,6 +176,136 @@ In summary, the stack looks as follows:
 This technology stack provides a solid foundation for building and maintaining scalable, high-performance ETL pipelines with decoupled data operations.
 Each component was chosen to balance simplicity, structural boundary isolation, and robust processing functionality.
 
+## How It Works
+
+This implementation follows structured ETL (Extract, Transform, Load) principles by clearly separating different phases of the data processing pipeline to maintain clean boundaries and improve flexibility.
+The key stages include table registration, relational SQL transformation, domain mapping, and sink persistence, which are orchestrated within a unified batch execution context.
+
+To explain how these parts work together, let's walk through the pipeline initialization and data flow triggered when executing `ItemsEtlJob`.
+We start at the pipeline configuration environment, extract the source tables, execute the reshaping query, map the relational rows into domain objects, and finally persist the aggregated documents into MongoDB.
+
+The job execution begins in `ItemsEtlJob`, which configures a batch execution environment and sets up the Flink Table infrastructure:
+```java
+public class ItemsEtlJob {
+
+    public static void main(String[] args) throws Exception {
+        var streamExecutionEnvironment = StreamExecutionEnvironment.getExecutionEnvironment().setRuntimeMode(BATCH);
+        var streamTableEnvironment = StreamTableEnvironment.create(streamExecutionEnvironment);
+
+        new ItemsTable().init(streamTableEnvironment);
+        new PartsTable().init(streamTableEnvironment);
+
+        (...)
+    }
+
+}
+```
+
+The data extraction phase relies on table abstractions like `ItemsTable` and `PartsTable`.
+These classes encapsulate the relational schemas and configurations needed to register physical storage views within Flink's runtime environment:
+
+```java
+public final class ItemsTable extends Table {
+
+    private static final String ITEMS_TABLE = """
+            CREATE TABLE items (
+                id STRING,
+                name STRING,
+                description STRING
+            ) WITH (
+                %s
+            )
+            """;
+
+    public ItemsTable() {
+        super("items", ITEMS_TABLE);
+    }
+
+}
+```
+
+Once the underlying source tables are initialized, the transformation phase leverages Flink SQL to handle relational nesting and joins.
+This allows the system to aggregate related rows from distinct schemas directly within the processing engine:
+
+```java
+var resultTable = streamTableEnvironment.sqlQuery("""
+    SELECT
+        i.id,
+        i.name,
+        i.description,
+        (
+            SELECT COLLECT(
+                CAST(ROW(p.id, p.name) AS ROW<id STRING, name STRING>)
+            )
+            FROM parts p
+            WHERE p.item_id = i.id
+        ) AS parts
+    FROM items i
+    """);
+```
+
+After the SQL engine generates the nested structural views, the resulting table is converted back into a data stream.
+Processing continues via `ItemMapper`, which transforms generic Flink `Row` structures into strongly-typed Java domain models, ensuring that infrastructure rows are isolated from domain definitions:
+
+```java
+public class ItemMapper implements MapFunction<Row, Item> {
+
+    private final PartMapper partMapper = new PartMapper();
+
+    @Override
+    public Item map(Row row) {
+        var item = new Item();
+
+        item.setId((String) row.getField("id"));
+        item.setName((String) row.getField("name"));
+        item.setDescription((String) row.getField("description"));
+        item.setParts(extractParts(row));
+
+        return item;
+    }
+
+    (...)
+}
+```
+
+Finally, the loading phase takes the mapped domain objects and routes them to a target database sink.
+The MongoDB infrastructure logic is abstracted behind `MongoSinkProvider`, which handles connection parameter parsing and configures the serialization strategy for document persistence:
+
+```java
+public class MongoSinkProvider<T> {
+
+    public MongoSink<T> create(String collectionName) {
+        try (var connectionParameters = new MongodbConnectionParameters()) {
+            return MongoSink.<T>builder()
+                    .setUri(connectionParameters.getUri())
+                    .setDatabase(connectionParameters.getDatabase())
+                    .setCollection(collectionName)
+                    .setSerializationSchema(new UpsertMongoSerializationSchema<>())
+                    .build();
+        }
+    }
+}
+```
+
+To construct the actual data flow, these processing stages are assembled into the pipeline that converts the SQL result into a data stream, applies the mapper, and attaches the MongoDB sink:
+```java
+var sinkProvider = new MongoSinkProvider<Item>();
+
+streamTableEnvironment.toDataStream(resultTable)
+    .map(new ItemMapper())
+    .sinkTo(sinkProvider.create("items"))
+    .name("ItemsETL output");
+```
+
+At this point, the fully configured pipeline is ready to be executed:
+```java
+streamExecutionEnvironment.execute("ItemsETL");
+```
+
+By following these principles, the processing pipeline remains highly adaptable to change, allowing new data mappings or infrastructure sinks to be introduced without breaking existing code.
+Consequently, updates can be introduced iteratively, step by step, rather than requiring large-scale refactoring.
+This approach supports long-term testability and clean, decoupled data pipeline organization.
+
 ## Disclaimer
 
 THIS SOFTWARE AND ANY DOCUMENTATION INCLUDED IN THIS REPOSITORY AND CREATED BY THE AUTHOR
