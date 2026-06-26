@@ -34,11 +34,9 @@ public class ItemsEtlJob {
                 FROM items i
                 """);
 
-        var sinkProvider = new MongoSinkProvider<Item>();
-
         streamTableEnvironment.toDataStream(resultTable)
                 .map(new ItemMapper())
-                .sinkTo(sinkProvider.create("items"))
+                .sinkTo(new MongoSinkProvider<Item>().create("items"))
                 .name("ItemsETL output");
 
         streamExecutionEnvironment.execute("ItemsETL");
