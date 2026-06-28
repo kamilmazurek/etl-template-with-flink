@@ -304,6 +304,49 @@ By following these principles, the processing pipeline remains highly adaptable 
 Consequently, updates can be introduced iteratively, step by step, rather than requiring large-scale refactoring.
 This approach supports long-term testability and clean, decoupled data pipeline organization.
 
+## Build and Deployment
+
+The project uses Apache Maven to build the application JAR and Docker to containerize both Flink and the ETL job, providing a flexible artifact that can be deployed to local infrastructure or environments like Kubernetes.
+To simplify local development and testing, the project comes with a configured Docker Compose setup that helps manage the Flink cluster and databases.
+
+The standard build compiles the project, executes both unit and integration tests, and installs the JAR file into the local repository:
+```shell
+mvnw clean install
+```
+
+You can use Docker Compose to build the Docker image and deploy the entire application cluster locally, along with all supporting databases, by running the following command:
+```shell
+docker compose up --build
+```
+
+This starts:
+* **Apache Flink Job Manager** with dashboard on port 8081
+* **Apache Flink Task Manager**
+* **PostgreSQL** on port 5432, preloaded with raw source tables for the extraction phase
+* **MongoDB** on port 27017, ready to save the processed documents during the loading phase
+
+Database passwords are loaded from the .env file.
+**Make sure to change default passwords to keep your environment secure.**
+
+Once the cluster is up, you can monitor the environment via the Apache Flink Dashboard:
+```console
+http://localhost:8081/
+```
+
+The ETL pipeline can then be triggered by submitting a simple POST request to the Flink REST API:
+```shell
+curl -X POST http://localhost:8081/jars/00000000-0000-0000-0000-000000000000_etl-template-with-flink.jar/run?entry-class=template.job.ItemsEtlJob
+```
+
+Alternatively, you can build the Docker image manually without Docker Compose:
+```shell
+mvnw clean package
+docker build -t template/etl-template-with-flink .
+```
+
+If you are running this image directly in Docker without Docker Compose, make sure to start a Job Manager and a Task Manager in the same Docker network with the required environment variables.
+For configuration details, please see the `docker-compose.yml` file.
+
 ## Disclaimer
 
 THIS SOFTWARE AND ANY DOCUMENTATION INCLUDED IN THIS REPOSITORY AND CREATED BY THE AUTHOR
