@@ -347,6 +347,69 @@ docker build -t template/etl-template-with-flink .
 If you are running this image directly in Docker without Docker Compose, make sure to start a Job Manager and a Task Manager in the same Docker network with the required environment variables.
 For configuration details, please see the `docker-compose.yml` file.
 
+## End to End Flow
+
+The project follows a traditional ETL (Extract, Transform, Load) pattern.
+It extracts records from a relational source, applies business logic transformations, and persists the results into a document store.
+
+The execution flow looks as follows:
+```
+POST request -> Flink (Orchestration) -> PostgreSQL (Extract) -> Flink (Transform) -> MongoDB (Load)
+```
+
+The pipeline execution is triggered by sending a simple POST request to the Flink REST API, for example:
+```shell
+curl -X POST http://localhost:8081/jars/00000000-0000-0000-0000-000000000000_etl-template-with-flink.jar/run?entry-class=template.job.ItemsEtlJob
+```
+
+The system then processes the data step by step:
+
+**1. Extract (Source: PostgreSQL)**
+- Client sends an `HTTP POST` request to the Flink JobManager to run the ItemsEtlJob (from JAR file).
+- The pipeline connects to the PostgreSQL instance.
+
+**2. Transform (Engine: Apache Flink)**
+- Flink processes the incoming data inside the TaskManager. 
+- Data is fetched from relational tables and mapped into internal domain objects.
+
+**3. Load (Sink: MongoDB)**
+- The processed objects are converted into database documents.
+- The transformed data is emitted to the MongoDB sink, which persists the documents into the target collections.
+
+To verify the initial source data, you can connect to the PostgreSQL instance using the following credentials:
+* **Host:** localhost
+* **Port:** 5432
+* **Database:** testdb
+* **Username:** admin
+* **Password:** specified in `.env` file (**Make sure to change default password to keep your environment secure**)
+
+Once connected, you can see the data by running:
+```sql
+SELECT * FROM items;
+```
+```sql
+SELECT * FROM parts;
+```
+
+To monitor the job execution you can access the Apache Flink Dashboard:
+```console
+http://localhost:8081/
+```
+From the dashboard (web interface), you can track metrics, inspect the execution graph, and view running and completed jobs.
+
+To verify that the items were successfully processed, you can check the data directly inside the MongoDB instance:
+* **Connection String:** `mongodb://admin:<password-from-env-file>@localhost:27017/`
+
+Password is taken from `.env` file (**make sure to change the default password to keep your environment secure**).
+
+Once connected, you can see the stored documents by running:
+```javascript
+use local;
+db.items.find().pretty();
+```
+
+This flow demonstrates how a basic ETL pipeline works in practice with Apache Flink, covering relational data extraction, data transformations, and document store persistence.
+
 ## Disclaimer
 
 THIS SOFTWARE AND ANY DOCUMENTATION INCLUDED IN THIS REPOSITORY AND CREATED BY THE AUTHOR
