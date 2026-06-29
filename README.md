@@ -32,7 +32,7 @@ Following steps provide a quick way to get started with the template:
     ```
 5. Run ETL job by sending a POST request to Flink's native REST API endpoint, e.g.:
     ```shell
-    curl -X POST http://localhost:8081/jars/00000000-0000-0000-0000-000000000000_etl-template-with-flink.jar/run?entry-class=template.job.ItemsEtlJob
+    curl -X POST http://localhost:8081/jars/etl-template-with-flink.jar/run?entry-class=template.job.ItemsEtlJob
     ```
 6. Verify the processing results by checking your local MongoDB instance. Transformed data should be loaded into the `items` collection. MongoDB connection string:
     ```console
@@ -335,7 +335,7 @@ http://localhost:8081/
 
 The ETL pipeline can then be triggered by submitting a simple POST request to the Flink REST API:
 ```shell
-curl -X POST http://localhost:8081/jars/00000000-0000-0000-0000-000000000000_etl-template-with-flink.jar/run?entry-class=template.job.ItemsEtlJob
+curl -X POST http://localhost:8081/jars/etl-template-with-flink.jar/run?entry-class=template.job.ItemsEtlJob
 ```
 
 Alternatively, you can build the Docker image manually without Docker Compose:
@@ -359,7 +359,7 @@ POST request -> Flink (Orchestration) -> PostgreSQL (Extract) -> Flink (Transfor
 
 The pipeline execution is triggered by sending a simple POST request to the Flink REST API, for example:
 ```shell
-curl -X POST http://localhost:8081/jars/00000000-0000-0000-0000-000000000000_etl-template-with-flink.jar/run?entry-class=template.job.ItemsEtlJob
+curl -X POST http://localhost:8081/jars/etl-template-with-flink.jar/run?entry-class=template.job.ItemsEtlJob
 ```
 
 The system then processes the data step by step:
