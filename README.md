@@ -381,7 +381,7 @@ To verify the initial source data, you can connect to the PostgreSQL instance us
 * **Port:** 5432
 * **Database:** testdb
 * **Username:** admin
-* **Password:** specified in `.env` file (**Make sure to change default password to keep your environment secure**)
+* **Password:** specified in `.env` file (**make sure to change default password to keep your environment secure**)
 
 Once connected, you can see the data by running:
 ```sql
@@ -409,6 +409,54 @@ db.items.find().pretty();
 ```
 
 This flow demonstrates how a basic ETL pipeline works in practice with Apache Flink, covering relational data extraction, data transformations, and document store persistence.
+
+## Flink Dashboard and REST API
+
+Apache Flink provides a built-in web dashboard and a REST API for managing, monitoring, and deploying data processing jobs.
+By default, these interfaces run on the JobManager node.
+
+The Apache Flink Dashboard can be used to monitor job execution, track metrics, and inspect the execution graph.
+You can access the dashboard interface at:
+```console
+http://localhost:8081/
+```
+
+### TODO: add screenshot
+
+By opening this URL in a browser, you can see running and completed jobs on your cluster.
+From there, you can view Task Managers and logs, as well as submit new jobs or inspect existing ones.
+
+You can also interact with the cluster programmatically using the Flink REST API.
+The template comes with a ready-to-run `ItemsEtlJob`. This job can be run by sending the following `POST` request:
+```shell
+curl -X POST http://localhost:8081/jars/etl-template-with-flink.jar/run?entry-class=template.job.ItemsEtlJob
+```
+
+You should see a response containing the generated Job ID, like:
+```json
+{
+  "jobid":"3c1f1eb86a8e06038f8d9c8d4a21353a"
+}
+```
+
+To check the job status, the following command can be used:
+```shell
+curl http://localhost:8081/jobs
+```
+
+This command returns a response showing the status of cluster's jobs, like:
+```json
+{
+   "jobs":[
+      {
+         "id":"3c1f1eb86a8e06038f8d9c8d4a21353a",
+         "status":"FINISHED"
+      }
+   ]
+}
+```
+
+These interfaces provide a straightforward way to manage your cluster, making it easy to run jobs, check execution states, and view system metrics.
 
 ## Disclaimer
 
