@@ -458,6 +458,55 @@ This command returns a response showing the status of cluster's jobs, like:
 
 These interfaces provide a straightforward way to manage your cluster, making it easy to run jobs, check execution states, and view system metrics.
 
+## Tests
+
+The project is covered by both unit and integration tests, with the Maven Surefire Plugin and Maven Failsafe Plugin preconfigured to execute them.
+
+Tests are written using JUnit, Mockito, Testcontainers, and Flink's MiniCluster, covering the transformation functions, connections, and end-to-end pipeline execution.
+
+There are two types of tests implemented in this template:
+* **Unit tests** (`*Test.java`) are executed by Surefire and focus on isolated components such as mappers, database configurations, tables, sinks, and job definition.
+* **Integration tests** (`*IT.java`) are executed by Failsafe and verify how the entire application interacts with live external components.
+
+The template comes with `AbstractIT`, which can be used to implement integration tests using real PostgreSQL and MongoDB instances running in Docker containers via Testcontainers, alongside Flink's native `MiniClusterExtension`. Therefore, Docker is required to run these tests.
+As a practical example, the template includes `ItemsEtlJobIT`, which extends `AbstractIT` to verify the complete end-to-end job execution.
+
+To execute both types of tests, run:
+```shell
+mvnw clean verify
+```
+
+To run only the unit tests via the Maven Surefire Plugin, use:
+```shell
+mvnw clean test
+```
+
+To run the integration tests through the Maven Failsafe Plugin, use:
+```shell
+mvnw clean integration-test
+```
+Note: This command will execute the unit tests as well.
+
+Both types of tests are also executed as part of a regular project build:
+```shell
+mvnw clean install
+```
+
+Additionally, Allure Report is preconfigured to generate visual test reports.
+To build and view these reports in your browser, run:
+```shell
+./mvnw clean verify
+./mvnw allure:serve
+```
+
+The test report will then open automatically in your browser. An excerpt from the report is shown below:
+
+### TODO add screenshot
+
+This strategy combines unit tests to validate individual transformation logic with integration tests that check the entire data lifecycle.
+It ensures that the pipeline reads data from the source database, processes the records, and persists documents to the sink.
+This approach works well with the decoupled design of an ETL architecture.
+
 ## Disclaimer
 
 THIS SOFTWARE AND ANY DOCUMENTATION INCLUDED IN THIS REPOSITORY AND CREATED BY THE AUTHOR
