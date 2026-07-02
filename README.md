@@ -495,8 +495,8 @@ mvnw clean install
 Additionally, Allure Report is preconfigured to generate visual test reports.
 To build and view these reports in your browser, run:
 ```shell
-./mvnw clean verify
-./mvnw allure:serve
+mvnw clean verify
+mvnw allure:serve
 ```
 
 The test report will then open automatically in your browser. An excerpt from the report is shown below:
@@ -506,6 +506,17 @@ The test report will then open automatically in your browser. An excerpt from th
 This strategy combines unit tests to validate individual transformation logic with integration tests that check the entire data lifecycle.
 It ensures that the pipeline reads data from the source database, processes the records, and persists documents to the sink.
 This approach works well with the decoupled design of an ETL architecture.
+
+## Additional Resources
+
+* [ETL Architecture Template with Apache Flink](https://kamilmazurek.pl/etl-template-with-apache-flink)
+* [Apache Flink Documentation](https://nightlies.apache.org/flink/flink-docs-lts/)
+* [Extract, Transform, Load, Wikipedia](https://en.wikipedia.org/wiki/Extract,_transform,_load)
+* [Collection Pipeline, Martin Fowler](https://martinfowler.com/articles/collection-pipeline/)
+* [Data Lake, Martin Fowler](https://martinfowler.com/bliki/DataLake.html)
+* [Apache Flink Testing (with Flink MiniCluster)](https://nightlies.apache.org/flink/flink-docs-lts/docs/dev/datastream/testing/)
+* [Testcontainers PostgreSQL Module](https://testcontainers.com/modules/postgresql/)
+* [Testcontainers MongoDB Module](https://testcontainers.com/modules/mongodb/)
 
 ## Disclaimer
 
