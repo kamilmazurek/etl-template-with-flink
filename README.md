@@ -30,15 +30,19 @@ Following steps provide a quick way to get started with the template:
     ```shell
     docker compose up --build
     ```
-5. Run ETL job by sending a POST request to Flink's native REST API endpoint, e.g.:
+5. Verify that Apache Flink is running by opening the Apache Flink Dashboard:
+    ```console
+    http://localhost:8081/
+    ```
+6. Run ETL job by sending a POST request to Flink's REST API endpoint, e.g.:
     ```shell
     curl -X POST http://localhost:8081/jars/etl-template-with-flink.jar/run?entry-class=template.job.ItemsEtlJob
     ```
-6. Verify the processing results by checking your local MongoDB instance. Transformed data should be loaded into the `items` collection. MongoDB connection string:
+7. Verify the processing results by checking your local MongoDB instance. Transformed data should be loaded into the `items` collection. MongoDB connection string:
     ```console
     mongodb://admin:etl-template-mongo-password@localhost:27017/
     ```
-7. Modify the source code to fit your needs, rebuild the project, and run the application 🚀.
+8. Modify the source code to fit your needs, rebuild the project, and run the application 🚀.
 
 ## Table of Contents
 
@@ -83,7 +87,7 @@ The core architectural pattern of an ETL (Extract, Transform, Load) pipeline foc
 
 This template structures these distinct phases into clear building blocks using a combination of Flink's Table/SQL API and DataStream API, so that a change in your data source or target storage does not cascade through your core processing logic.
 
-The architecture typically consists of Source Tables, Relational SQL Queries, Domain Mappers, and Target Sinks. It cleanly separates declarative relational operations (such as joins and array aggregations) from programmatic object manipulations (such as mappings and domain object nesting).
+The architecture typically consists of source tables, queries, mappers, and sinks. It cleanly separates declarative relational operations (such as joins and array aggregations) from programmatic object manipulations (such as mappings and domain object nesting).
 
 The image below shows the concept implemented in this project:
 
@@ -102,7 +106,8 @@ The implementation is designed to be modular, flexible, and easy to extend. It c
 * **Loading (Sink)**
     * Saving data to MongoDB using the MongoDB Sink
 
-By default, this template extracts data from PostgreSQL and loads documents to MongoDB. However, because each part is isolated, swapping a relational database for a message broker or changing the target document store can be done without rewriting your core mapping logic.
+By default, this template extracts data from PostgreSQL and loads it into MongoDB.
+However, thanks to its decoupled design, you can swap the source database for another relational engine, or replace the target document store with a message broker, all without rewriting core mapping logic.
 
 ## Apache Flink as Batch Engine
 
