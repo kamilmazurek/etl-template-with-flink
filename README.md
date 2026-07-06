@@ -184,12 +184,11 @@ Each component was chosen to balance simplicity, structural boundary isolation, 
 ## How It Works
 
 This implementation follows structured ETL (Extract, Transform, Load) principles by clearly separating different phases of the data processing pipeline to maintain clean boundaries and improve flexibility.
-The key stages include table registration, relational SQL transformation, domain mapping, and sink persistence, which are orchestrated within a unified batch execution context.
+The key stages include extraction from tables, relational SQL transformation, domain mapping, and loading to the target database, which are orchestrated across Flink's unified Table and DataStream APIs in batch mode.
 
-To explain how these parts work together, let's walk through the pipeline initialization and data flow triggered when executing `ItemsEtlJob`.
-We start at the pipeline configuration environment, extract the source tables, execute the reshaping query, map the relational rows into domain objects, and finally persist the aggregated documents into MongoDB.
+To see how this works, let's walk through the pipeline initialization and data flow. Execution begins by running `ItemsEtlJob`.
 
-The job execution begins in `ItemsEtlJob`, which configures a batch execution environment and sets up the Flink Table infrastructure:
+It starts by configuring a stream execution environment for batch processing and setting up the Flink Table environment:
 ```java
 public class ItemsEtlJob {
 
@@ -229,7 +228,7 @@ public final class ItemsTable extends Table {
 }
 ```
 
-Once the underlying source tables are initialized, the transformation phase leverages Flink SQL to handle relational nesting and joins.
+Once the underlying source tables are initialized, the pipeline enters the transformation phase, where Flink SQL handles relational nesting and joins.
 This allows the system to aggregate related rows from distinct schemas directly within the processing engine:
 
 ```java
@@ -239,7 +238,8 @@ var resultTable = streamTableEnvironment.sqlQuery("""
         i.name,
         i.description,
         (
-            SELECT COLLECT(
+            SELECT COLLECT
+            (
                 CAST(ROW(p.id, p.name) AS ROW<id STRING, name STRING>)
             )
             FROM parts p
@@ -249,9 +249,8 @@ var resultTable = streamTableEnvironment.sqlQuery("""
     """);
 ```
 
-After the SQL engine generates the nested structural views, the resulting table is converted back into a data stream.
-Processing continues via `ItemMapper`, which transforms generic Flink `Row` structures into strongly-typed Java domain models, ensuring that infrastructure rows are isolated from domain definitions:
-
+After the SQL engine generates the nested row structures, the resulting table is converted into a data stream.
+Processing continues via `ItemMapper`, which transforms generic Flink `Row` structures into strongly-typed Java domain models, ensuring that underlying data formats are isolated from domain definitions:
 ```java
 public class ItemMapper implements MapFunction<Row, Item> {
 
@@ -343,13 +342,13 @@ The ETL pipeline can then be triggered by submitting a simple POST request to th
 curl -X POST http://localhost:8081/jars/etl-template-with-flink.jar/run?entry-class=template.job.ItemsEtlJob
 ```
 
-Alternatively, you can build the Docker image manually without Docker Compose:
+Alternatively, you can build the Docker image manually, without Docker Compose:
 ```shell
 mvnw clean package
 docker build -t template/etl-template-with-flink .
 ```
 
-If you are running this image directly in Docker without Docker Compose, make sure to start a Job Manager and a Task Manager in the same Docker network with the required environment variables.
+If you are running this image directly in Docker, without Docker Compose, make sure to start a Job Manager and a Task Manager in the same Docker network with the required environment variables.
 For configuration details, please see the `docker-compose.yml` file.
 
 ## End to End Flow
