@@ -25,7 +25,8 @@ public class ItemsEtlJob {
                     i.name,
                     i.description,
                     (
-                        SELECT COLLECT(
+                        SELECT COLLECT
+                        (
                             CAST(ROW(p.id, p.name) AS ROW<id STRING, name STRING>)
                         )
                         FROM parts p
