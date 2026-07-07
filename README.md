@@ -21,28 +21,29 @@ The goal is to keep it simple, clean and easy to modify.
 Following steps provide a quick way to get started with the template:
 
 1. Ensure a JDK is available to build and run the code. Temurin, based on OpenJDK and available from [adoptium.net](https://adoptium.net/), can be used for this purpose.
-2. Download the source code either by cloning the repository with Git or by downloading the ZIP file. If you downloaded the ZIP, extract it. Then navigate to the etl-template-with-flink folder.
-3. Build the project and compile the code into a JAR file:
+2. The project uses Docker to run Apache Flink, PostgreSQL and MongoDB. It is possible to run the template without it, but using Docker is recommended to get started quickly. The following steps assume Docker is installed, so please make sure you have it before proceeding.
+3. Download the source code either by cloning the repository with Git or by downloading the ZIP file. If you downloaded the ZIP, extract it. Then navigate to the etl-template-with-flink folder.
+4. Build the project and compile the code into a JAR file:
     ```shell
     mvnw clean install
     ```
-4. Build Docker Image and start the required infrastructure (Flink cluster, PostgreSQL, and MongoDB) using Docker Compose:
+5. Build Docker Image and start the required infrastructure (Flink cluster, PostgreSQL, and MongoDB) using Docker Compose:
     ```shell
     docker compose up --build
     ```
-5. Verify that Apache Flink is running by opening the Apache Flink Dashboard:
+6. Verify that Apache Flink is running by opening the Apache Flink Dashboard:
     ```console
     http://localhost:8081/
     ```
-6. Run ETL job by sending a POST request to Flink's REST API endpoint, e.g.:
+7. Run ETL job by sending a POST request to Flink's REST API endpoint, e.g.:
     ```shell
     curl -X POST http://localhost:8081/jars/etl-template-with-flink.jar/run?entry-class=template.job.ItemsEtlJob
     ```
-7. Verify the processing results by checking your local MongoDB instance. Transformed data should be loaded into the `items` collection. MongoDB connection string:
+8. Verify the processing results by checking your local MongoDB instance. Transformed data should be loaded into the `items` collection. MongoDB connection string:
     ```console
     mongodb://admin:etl-template-mongo-password@localhost:27017/
     ```
-8. Modify the source code to fit your needs, rebuild the project, and run the application 🚀.
+9. Modify the source code to fit your needs, rebuild the project, and run the application 🚀.
 
 ## Table of Contents
 
@@ -401,9 +402,10 @@ http://localhost:8081/
 ```
 From the dashboard (web interface), you can track metrics, inspect the execution graph, and view running and completed jobs.
 
-To verify that the items were successfully processed, you can check the data directly inside the MongoDB instance:
-* **Connection String:** `mongodb://admin:<password-from-env-file>@localhost:27017/`
-
+To verify that the items were successfully processed, you can check the data directly inside the MongoDB instance. Here's connection string:
+```console
+mongodb://admin:<password-from-env-file>@localhost:27017
+```
 Password is taken from `.env` file (**make sure to change the default password to keep your environment secure**).
 
 Once connected, you can see the stored documents by running:
@@ -419,16 +421,16 @@ This flow demonstrates how a basic ETL pipeline works in practice with Apache Fl
 Apache Flink provides a built-in web dashboard and a REST API for managing, monitoring, and deploying data processing jobs.
 By default, these interfaces run on the JobManager node.
 
-The Apache Flink Dashboard can be used to monitor job execution, track metrics, and inspect the execution graph.
+The Apache Flink Dashboard lets you monitor job execution, track metrics, and inspect the execution graph.
 You can access the dashboard interface at:
 ```console
 http://localhost:8081/
 ```
 
-### TODO: add screenshot
-
 By opening this URL in a browser, you can see running and completed jobs on your cluster.
 From there, you can view Task Managers and logs, as well as submit new jobs or inspect existing ones.
+
+### TODO: add screenshot
 
 You can also interact with the cluster programmatically using the Flink REST API.
 The template comes with a ready-to-run `ItemsEtlJob`. This job can be run by sending the following `POST` request:
@@ -466,10 +468,11 @@ These interfaces provide a straightforward way to manage your cluster, making it
 
 The project is covered by both unit and integration tests, with the Maven Surefire Plugin and Maven Failsafe Plugin preconfigured to execute them.
 
-Tests are written using JUnit, Mockito, Testcontainers, and Flink's MiniCluster, covering the transformation functions, connections, and end-to-end pipeline execution.
+Tests use JUnit, Mockito, Testcontainers, and Flink's MiniCluster to cover key areas including core transformation functions, database connections, and full end-to-end pipeline execution.
+This combination lets you validate the data processing workflow during build, without deploying a standalone cluster.
 
 There are two types of tests implemented in this template:
-* **Unit tests** (`*Test.java`) are executed by Surefire and focus on isolated components such as mappers, database configurations, tables, sinks, and job definition.
+* **Unit tests** (`*Test.java`) run via Surefire and focus on isolated components such as mappers, database configurations, tables, sinks, and job definition.
 * **Integration tests** (`*IT.java`) are executed by Failsafe and verify how the entire application interacts with live external components.
 
 The template comes with `AbstractIT`, which can be used to implement integration tests using real PostgreSQL and MongoDB instances running in Docker containers via Testcontainers, alongside Flink's native `MiniClusterExtension`. Therefore, Docker is required to run these tests.
