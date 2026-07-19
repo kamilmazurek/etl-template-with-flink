@@ -527,6 +527,7 @@ This approach works well with the decoupled design of an ETL architecture.
 * [Apache Flink Testing (with Flink MiniCluster)](https://nightlies.apache.org/flink/flink-docs-lts/docs/dev/datastream/testing/)
 * [Testcontainers PostgreSQL Module](https://testcontainers.com/modules/postgresql/)
 * [Testcontainers MongoDB Module](https://testcontainers.com/modules/mongodb/)
+* [ETL Architecture Template with Apache Flink on LibHunt](https://www.libhunt.com/r/etl-template-with-flink)
 
 ## Author
 
