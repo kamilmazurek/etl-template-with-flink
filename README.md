@@ -1,3 +1,6 @@
+> This documentation is also available in an enhanced form at
+> [ETL Architecture Template](https://kamilmazurek.pl/etl-template-with-flink) page.
+
 # ETL Architecture Template with Apache Flink
 
 This repository contains an implementation of a Java-based ETL (Extract, Transform, Load) pipeline designed to migrate and transform data between databases.
