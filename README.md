@@ -519,7 +519,7 @@ This approach works well with the decoupled design of an ETL architecture.
 
 ## Additional Resources
 
-* [ETL Architecture Template with Apache Flink](https://kamilmazurek.pl/etl-template-with-apache-flink)
+* [ETL Architecture Template with Apache Flink](https://kamilmazurek.pl/etl-template-with-flink)
 * [Apache Flink Documentation](https://nightlies.apache.org/flink/flink-docs-lts/)
 * [Extract, Transform, Load, Wikipedia](https://en.wikipedia.org/wiki/Extract,_transform,_load)
 * [Collection Pipeline, Martin Fowler](https://martinfowler.com/articles/collection-pipeline/)
