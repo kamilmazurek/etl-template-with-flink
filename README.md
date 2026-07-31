@@ -8,7 +8,7 @@ Out of the box, it provides a fully working PostgreSQL to MongoDB pipeline that 
 It serves as a ready-to-use template for modern data engineering workloads.
 
 The data pipeline is built using a unified combination of the Flink Table/SQL API and DataStream API,
-offering a modular, decoupled structure designed to quickly bootstrap scalable, fault-tolerant ETL applications.
+offering a modular, decoupled structure designed to quickly bootstrap scalable, testable and reliable ETL applications.
 
 Key advantages:
 * **Developer Productivity**: Provides configuration for environments, schemas, transformations, and connectors.
@@ -95,7 +95,10 @@ The architecture typically consists of source tables, queries, mappers, and sink
 
 The image below shows the concept implemented in this project:
 
-### TODO: add image
+![Concept Diagram](readme-images/etl-architecture-template-concept-diagram.png)
+<p align="center">
+<i>ETL Architecture Template concept diagram</i>
+</p>
 
 Apache Flink is well-suited for this architecture due to its unified execution model.
 In this template, the pipeline reads from a relational environment, uses Flink's SQL execution planner to handle entity relationships, and then transitions to the DataStream layer to map Java domain representations before pushing documents downstream.
@@ -433,7 +436,11 @@ http://localhost:8081/
 By opening this URL in a browser, you can see running and completed jobs on your cluster.
 From there, you can view Task Managers and logs, as well as submit new jobs or inspect existing ones.
 
-### TODO: add screenshot
+![Apache Flink Dashboard](readme-images/apache-flink-dashboard.png)
+<p align="center">
+<i>Apache Flink Dashboard. For more information about Apache Flink, please visit</i>
+<a href="https://flink.apache.org"><i>https://flink.apache.org</i></a>
+</p>
 
 You can also interact with the cluster programmatically using the Flink REST API.
 The template comes with a ready-to-run `ItemsEtlJob`. This job can be run by sending the following `POST` request:
@@ -511,7 +518,11 @@ mvnw allure:serve
 
 The test report will then open automatically in your browser. An excerpt from the report is shown below:
 
-### TODO add screenshot
+![Allure Report](readme-images/sample-allure-report.png)
+<p align="center">
+<i>Sample Allure Report. For more information about Allure Report please visit</i>
+<a href="https://allurereport.org/"><i>https://allurereport.org/</i></a>
+</p>
 
 This strategy combines unit tests to validate individual transformation logic with integration tests that check the entire data lifecycle.
 It ensures that the pipeline reads data from the source database, processes the records, and persists documents to the sink.
