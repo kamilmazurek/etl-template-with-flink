@@ -12,24 +12,23 @@
         <!-- jdk -->
         <java.version>17</java.version>
         <!-- flink -->
-        <flink.version>1.20.3</flink.version>
-        <flink-connector-jdbc.version>3.3.0-1.20</flink-connector-jdbc.version>
+        <flink.version>1.20.5</flink.version>
+        <flink-connector-jdbc.version>3.4.0-1.20</flink-connector-jdbc.version>
         <flink-sql-connector-mongodb.version>2.0.0-1.20</flink-sql-connector-mongodb.version>
         <!-- datasource -->
-        <postgresql.version>42.7.10</postgresql.version>
+        <postgresql.version>42.7.13</postgresql.version>
         <!-- util -->
-        <lombok.version>1.18.44</lombok.version>
+        <lombok.version>1.18.46</lombok.version>
         <!-- test -->
-        <junit.version>5.10.2</junit.version>
-        <mockito.version>5.11.0</mockito.version>
+        <junit.version>5.14.4</junit.version>
+        <mockito.version>5.23.0</mockito.version>
         <testcontainers.version>1.21.4</testcontainers.version>
         <system-stubs.version>2.1.8</system-stubs.version>
-        <byte-buddy.version>1.14.12</byte-buddy.version>
         <allure.version>2.35.1</allure.version>
         <allure.maven.plugin.version>2.18.0</allure.maven.plugin.version>
         <!-- build -->
-        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
-        <maven-shade-plugin.version>3.5.2</maven-shade-plugin.version>
+        <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
+        <maven-shade-plugin.version>3.6.2</maven-shade-plugin.version>
     </properties>
 
     <dependencies>
@@ -114,18 +113,6 @@
             <groupId>uk.org.webcompere</groupId>
             <artifactId>system-stubs-jupiter</artifactId>
             <version>${system-stubs.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.bytebuddy</groupId>
-            <artifactId>byte-buddy</artifactId>
-            <version>${byte-buddy.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.bytebuddy</groupId>
-            <artifactId>byte-buddy-agent</artifactId>
-            <version>${byte-buddy.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
