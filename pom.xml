@@ -20,6 +20,7 @@
         <!-- util -->
         <lombok.version>1.18.44</lombok.version>
         <!-- test -->
+        <junit.version>5.10.2</junit.version>
         <mockito.version>5.11.0</mockito.version>
         <testcontainers.version>1.21.4</testcontainers.version>
         <system-stubs.version>2.1.8</system-stubs.version>
@@ -62,6 +63,12 @@
             <version>${lombok.version}</version>
         </dependency>
         <!-- test -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
