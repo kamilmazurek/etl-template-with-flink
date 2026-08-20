@@ -526,6 +526,20 @@ The test report will then open automatically in your browser. An excerpt from th
 <a href="https://allurereport.org/"><i>https://allurereport.org/</i></a>
 </p>
 
+To monitor code quality, the project is integrated with the JaCoCo Maven Plugin to track test coverage.
+The setup automatically merges the execution metrics from both your unit and integration tests into a single report.
+
+You can generate this coverage report by running the `verify` lifecycle phase, e.g.:
+```shell
+mvnw clean verify
+```
+
+Once the build succeeds, the report will be generated inside the `target/site` directory:
+```
+target/site/jacoco/index.html
+```
+This provides visibility into the coverage of tests, helping to spot unchecked logic.
+
 This strategy combines unit tests to validate individual transformation logic with integration tests that check the entire data lifecycle.
 It ensures that the pipeline reads data from the source database, processes the records, and persists documents to the sink.
 This approach works well with the decoupled design of an ETL architecture.
