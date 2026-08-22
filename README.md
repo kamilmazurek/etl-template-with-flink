@@ -4,6 +4,7 @@
 # ETL Architecture Template with Apache Flink
 
 [![Build](https://github.com/kamilmazurek/etl-template-with-flink/actions/workflows/build.yml/badge.svg)](https://github.com/kamilmazurek/etl-template-with-flink/actions/workflows/build.yml)
+[![codecov](https://codecov.io/gh/kamilmazurek/etl-template-with-flink/graph/badge.svg?token=1OOB1S5YUU)](https://codecov.io/gh/kamilmazurek/etl-template-with-flink)
 
 This repository contains an implementation of a Java-based ETL (Extract, Transform, Load) pipeline designed to migrate and transform data between databases.
 Out of the box, it provides a fully working PostgreSQL to MongoDB pipeline that can be adapted to other sources or targets using Flink connectors.
