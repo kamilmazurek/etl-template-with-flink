@@ -1,7 +1,7 @@
 > This documentation is also available in an enhanced form at
 > [ETL Architecture Template](https://kamilmazurek.pl/etl-template-with-flink) page.
 
-# ETL Architecture Template with Apache Flink
+# ETL Architecture Template with Flink
 
 [![Build](https://github.com/kamilmazurek/etl-template-with-flink/actions/workflows/build.yml/badge.svg)](https://github.com/kamilmazurek/etl-template-with-flink/actions/workflows/build.yml)
 [![codecov](https://codecov.io/gh/kamilmazurek/etl-template-with-flink/graph/badge.svg?token=1OOB1S5YUU)](https://codecov.io/gh/kamilmazurek/etl-template-with-flink)
@@ -547,7 +547,7 @@ This approach works well with the decoupled design of an ETL architecture.
 
 ## Additional Resources
 
-* [ETL Architecture Template with Apache Flink](https://kamilmazurek.pl/etl-template-with-flink)
+* [ETL Architecture Template with Flink](https://kamilmazurek.pl/etl-template-with-flink)
 * [Apache Flink Documentation](https://nightlies.apache.org/flink/flink-docs-lts/)
 * [Extract, Transform, Load, Wikipedia](https://en.wikipedia.org/wiki/Extract,_transform,_load)
 * [Collection Pipeline, Martin Fowler](https://martinfowler.com/articles/collection-pipeline/)
@@ -555,7 +555,7 @@ This approach works well with the decoupled design of an ETL architecture.
 * [Apache Flink Testing (with Flink MiniCluster)](https://nightlies.apache.org/flink/flink-docs-lts/docs/dev/datastream/testing/)
 * [Testcontainers PostgreSQL Module](https://testcontainers.com/modules/postgresql/)
 * [Testcontainers MongoDB Module](https://testcontainers.com/modules/mongodb/)
-* [ETL Architecture Template with Apache Flink on LibHunt](https://www.libhunt.com/r/etl-template-with-flink)
+* [ETL Architecture Template with Flink on LibHunt](https://www.libhunt.com/r/etl-template-with-flink)
 
 ## Author
 
