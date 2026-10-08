@@ -1,5 +1,5 @@
 > This documentation is also available in an enhanced form at
-> [ETL Architecture Template](https://kamilmazurek.pl/etl-template-with-flink) page.
+> [ETL Architecture Template with Flink](https://kamilmazurek.pl/etl-template-with-flink) page.
 
 # ETL Architecture Template with Flink
 
