@@ -136,6 +136,7 @@ This approach keeps the batch pipeline modular and easy to maintain.
 While this template comes preconfigured with a MongoDB sink, Flink supports a broad ecosystem of [built-in connectors](https://nightlies.apache.org/flink/flink-docs-stable/docs/connectors/datastream/overview/).
 Because the extraction and transformation steps are isolated, you can change the target destination without rewriting your logic.
 You can configure the pipeline to insert the data into a traditional SQL database, stream the events directly into a Kafka topic, or write the data to standard file formats like CSV or Parquet.
+To test Kafka integration during development, you can easily [run Kafka locally in Docker](https://kamilmazurek.pl/run-kafka-locally).
 
 ## When to Use ETL Architecture
 
