@@ -542,6 +542,16 @@ target/site/jacoco/index.html
 ```
 This provides visibility into the coverage of tests, helping to spot unchecked logic.
 
+The project also includes a smoke test script that verifies the packaged application in its Docker deployment.
+It builds the JAR file, starts the Flink cluster, PostgreSQL and MongoDB with Docker Compose and waits until they are ready.
+Then it checks the Flink dashboard and REST API, verifies that Flink containers run as a non-root user, triggers the ETL job through the Flink REST API and checks that the transformed items are stored in MongoDB.
+The job is run twice to make sure that items are upserted rather than duplicated:
+```console
+./smoke-test.sh
+```
+The script uses a separate Docker Compose project and removes its containers afterwards. It requires Bash, curl and Docker (on Windows, it can be run with Git Bash).
+Smoke tests are run in the CI pipeline as well, after the build.
+
 This strategy combines unit tests to validate individual transformation logic with integration tests that check the entire data lifecycle.
 It ensures that the pipeline reads data from the source database, processes the records, and persists documents to the sink.
 This approach works well with the decoupled design of an ETL architecture.

@@ -30,6 +30,11 @@ jobs:
           TESTCONTAINERS_RYUK_DISABLED: true
         run: ./mvnw -B clean verify
 
+      - name: Run smoke tests
+        run: ./smoke-test.sh
+        env:
+          SKIP_BUILD: true
+
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4
         env:
