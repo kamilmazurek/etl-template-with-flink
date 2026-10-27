@@ -1,4 +1,4 @@
-FROM flink:1.20.3-java17
+FROM flink:1.20.5-java17
 USER flink
 RUN mkdir -p /opt/flink/jars/flink-web-upload
 COPY --chown=flink:flink target/etl-template-with-flink*.jar /opt/flink/jars/flink-web-upload/etl-template-with-flink.jar
