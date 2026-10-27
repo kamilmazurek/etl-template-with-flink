@@ -57,7 +57,7 @@ services:
       POSTGRESQL_URL: jdbc:postgresql://postgres:5432/testdb
       POSTGRESQL_USER: admin
       POSTGRESQL_PASSWORD: ${ETL_TEMPLATE_POSTGRESQL_PASSWORD}
-      MONGODB_URI: mongodb://admin:${ETL_TEMPLATE_POSTGRESQL_PASSWORD}@mongo:27017
+      MONGODB_URI: mongodb://admin:${ETL_TEMPLATE_MONGO_PASSWORD}@mongo:27017
       MONGODB_DATABASE: local
     depends_on:
       - etl-template-with-flink-jobmanager
